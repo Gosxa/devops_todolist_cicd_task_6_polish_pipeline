@@ -24,10 +24,11 @@ on:
           - windows-3.9
 
 env:
-  DockerImageName: gosxan/todoapp
+  DockerImageName: todoapp
 
 jobs:
   python-ci:
+    name: Python CI
     strategy:
       matrix:
         include:
@@ -43,6 +44,7 @@ jobs:
           - os: windows-latest
             python: '3.9'
             name: windows-3.9
+    if: github.event_name != 'workflow_dispatch' || matrix.name == github.event.inputs.artifact
     runs-on: ${{ matrix.os }}
     defaults:
       run:
