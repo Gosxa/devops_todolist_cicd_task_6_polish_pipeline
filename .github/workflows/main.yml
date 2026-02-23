@@ -13,30 +13,37 @@ on:
     branches: ["main"]
   workflow_dispatch:
     inputs:
-      Python-Version:
-        description: 'Python Version'
+      artifact:
+        description: 'Select artifact to deploy'
         required: true
-        default: '3.8'
         type: choice
-        options: ['3.8', '3.9']
-      OsType:
-        description: 'OS Type'
-        required: true
-        default: 'ubuntu-latest'
-        type: choice
-        options: ['ubuntu-latest', 'windows-latest']
+        options:
+          - ubuntu-3.8
+          - ubuntu-3.9
+          - windows-3.8
+          - windows-3.9
 
 env:
-  PythonVersion: 3.8
   DockerImageName: gosxan/todoapp
 
 jobs:
   python-ci:
     strategy:
       matrix:
-        python-version: [3.8, 3.9]
-        OsType: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.OsType }}
+        include:
+          - os: ubuntu-latest
+            python: '3.8'
+            name: ubuntu-3.8
+          - os: ubuntu-latest
+            python: '3.9'
+            name: ubuntu-3.9
+          - os: windows-latest
+            python: '3.8'
+            name: windows-3.8
+          - os: windows-latest
+            python: '3.9'
+            name: windows-3.9
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         working-directory: ./src
@@ -44,10 +51,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.python }}
 
       - name: Install dependencies
         run: |
